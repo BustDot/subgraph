@@ -1,6 +1,11 @@
-type ExampleEntity @entity {
+type Square @entity {
   id: ID!
-  count: BigInt!
+  holderNum: BigInt!
+  holderAddress: [Bytes!]
+  items: [Item!]
+}
+
+type Item @entity {
+  id: ID!
   owner: Bytes! # address
-  approved: Bytes! # address
 }

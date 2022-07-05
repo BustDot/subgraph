@@ -1,4 +1,4 @@
-specVersion: 0.0.1
+specVersion: 0.0.4
 schema:
   file: ./schema.graphql
 dataSources:
@@ -8,23 +8,18 @@ dataSources:
     source:
       address: "0x9a647b328D587Fa2bFBB551fEfDd5C7A46e0FEF3"
       abi: Contract
+      startBlock: 10960000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - Approval
-        - ApprovalForAll
         - NewEpicNFTMinted
         - Transfer
       abis:
         - name: Contract
           file: ./abis/Contract.json
       eventHandlers:
-        - event: Approval(indexed address,indexed address,indexed uint256)
-          handler: handleApproval
-        - event: ApprovalForAll(indexed address,indexed address,bool)
-          handler: handleApprovalForAll
         - event: NewEpicNFTMinted(address,uint256)
           handler: handleNewEpicNFTMinted
         - event: Transfer(indexed address,indexed address,indexed uint256)
