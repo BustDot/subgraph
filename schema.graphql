@@ -9,3 +9,8 @@ type Item @entity {
   id: ID!
   owner: Bytes! # address
 }
+
+type User @entity {
+  id: ID!
+  num: BigInt!
+}

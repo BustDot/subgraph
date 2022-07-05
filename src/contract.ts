@@ -4,7 +4,7 @@ import {
   NewEpicNFTMinted,
   Transfer
 } from "../generated/Contract/Contract"
-import { Square, Item } from "../generated/schema"
+import { Square, Item, User } from "../generated/schema"
 
 
 export function handleNewEpicNFTMinted(event: NewEpicNFTMinted): void {
@@ -28,7 +28,7 @@ export function handleNewEpicNFTMinted(event: NewEpicNFTMinted): void {
   if(holderAddress.includes(event.params.sender)===false) {
     holderAddress.push(event.params.sender);
     square.holderAddress = holderAddress;
-    square.holderNum = new BigInt(holderAddress.length);
+    square.holderNum = square.holderNum.plus(BigInt.fromI32(1));
   }
   
   let items = changetype<string[]>(square.items);
@@ -37,7 +37,47 @@ export function handleNewEpicNFTMinted(event: NewEpicNFTMinted): void {
   square.save();
 }
 
-export function handleTransfer(event: Transfer): void {}
+export function handleTransfer(event: Transfer): void {
+  let square = Square.load("0");
+  if(square === null) {
+    square = new Square("0");
+    square.holderNum = new BigInt(0);
+    square.items = new Array<string>(0);
+    square.holderAddress = new Array<Bytes>(0);
+  }
+
+  let userTo = User.load(event.params.to.toHexString());
+  if(userTo === null) {
+    userTo = new User(event.params.to.toHexString());
+    userTo.num = new BigInt(0);
+  }
+
+  let userFrom = User.load(event.params.from.toHexString());
+  if(userFrom === null) {
+    userFrom = new User(event.params.from.toHexString());
+    userFrom.num = new BigInt(0);
+  }
+
+  userTo.num = userTo.num.plus(BigInt.fromI32(1));
+  userFrom.num = userFrom.num.minus(BigInt.fromI32(1));
+  
+
+  if(userTo.num.gt(BigInt.fromI32(0))) {
+    if(userFrom.num.gt(BigInt.fromI32(0))) {
+      square.holderNum = square.holderNum.plus(BigInt.fromI32(1));
+    }
+  }
+    
+  if(userTo.num.gt(BigInt.fromI32(1))) {
+    if(userFrom.num.equals(BigInt.fromI32(0))) {
+      square.holderNum = square.holderNum.minus(BigInt.fromI32(1));
+    }
+  }
+
+  userFrom.save();
+  userTo.save();
+  square.save();
+}
 
 
 // export function handleNewEpicNFTMinted(event: NewEpicNFTMinted): void {

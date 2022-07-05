@@ -126,3 +126,44 @@ export class Item extends Entity {
     this.set("owner", Value.fromBytes(value));
   }
 }
+
+export class User extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save User entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type User must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("User", id.toString(), this);
+    }
+  }
+
+  static load(id: string): User | null {
+    return changetype<User | null>(store.get("User", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get num(): BigInt {
+    let value = this.get("num");
+    return value!.toBigInt();
+  }
+
+  set num(value: BigInt) {
+    this.set("num", Value.fromBigInt(value));
+  }
+}
